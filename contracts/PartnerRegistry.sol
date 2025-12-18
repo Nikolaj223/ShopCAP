@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 // ============================================================================
 // 2. PartnerRegistry.sol
-// Назначение: Хранит и управляет списком зарегистрированных партнеров.
+// Purpose: Stores and manages a list of registered partners.
 // ============================================================================
 contract PartnerRegistry is Ownable {
     
@@ -14,31 +14,31 @@ contract PartnerRegistry is Ownable {
         bool isActive;
         string name;
         string description;
-        string referralLink; // Уникальная реферальная ссылка партнера
-        address partnerWallet; // Адрес кошелька партнера для получения бонусов
+        string referralLink; // Partner's unique referral link
+        address partnerWallet; // The partner's wallet address for receiving bonuses
     }
 
-    // Карта для хранения информации о партнерах по их ID
+    // A map for storing information about partners by their ID
     mapping(uint256 => Partner) public partners;
     uint256 private _partnerIdCounter;
 
-    // События для отслеживания изменений в реестре партнеров
     event PartnerAdded(uint256 indexed partnerId, string name, address partnerWallet);
     event PartnerUpdated(uint256 indexed partnerId, string name, address partnerWallet);
     event PartnerStatusToggled(uint256 indexed partnerId, bool isActive);
 
-    constructor() Ownable(msg.sender) {
-        // Инициализируем счетчик с 0. Первый ID будет 1.
+    constructor() Ownable(msg.sender) {   
+// Initialize the counter with 0. The first ID will be 1.
         _partnerIdCounter = 0;
     }
 
     /**
-     * @dev Добавляет нового партнера в реестр. Может быть вызвано только владельцем.
-     * @param _name Название партнера.
-     * @param _description Описание партнера.
-     * @param _referralLink Реферальная ссылка партнера.
-     * @param _partnerWallet Адрес кошелька партнера для начислений.
-     * @return partnerId ID добавленного партнера.
+   
+* @dev Adds a new partner to the registry. Can only be called by the owner.
+ * @param _name The name of the partner.
+ * @param _description The description of the partner.
+ * @param _referralLink The referral link of the partner.
+ * @param _partnerWallet The wallet address of the partner for rewards.
+ * @return partnerId The ID of the added partner.
      */
     function addPartner(
         string memory _name,
@@ -50,7 +50,6 @@ contract PartnerRegistry is Ownable {
         _partnerIdCounter++;
         uint256 newPartnerId = _partnerIdCounter;
 
-        // Проверяем, что ID не равен 0 (он всегда будет > 0 после инкрементации из 0)
         require(newPartnerId > 0, "Partner ID must be greater than 0");
 
         partners[newPartnerId] = Partner({
@@ -86,15 +85,13 @@ contract PartnerRegistry is Ownable {
     }
 
     /**
-     * @dev Изменяет статус активности партнера. Может быть вызвано только владельцем.
-     * @param _partnerId ID партнера.
-     * @param _isActive Новый статус активности (true для активации, false для деактивации).
-     */
+    
+* @dev Changes the partner's activity status. Can only be called by the owner.
+ * @param _partnerId The partner's ID.
+ * @param _isActive The new activity status (true for activation, false for deactivation).
+ */
     function togglePartnerStatus(uint256 _partnerId, bool _isActive) external onlyOwner {
-        // Проверяем, что ID существует и является действительным
         require(_partnerId > 0 && _partnerId <= _partnerIdCounter, "Invalid partner ID");
-
-        // Обновляем статус активности
         partners[_partnerId].isActive = _isActive;
         emit PartnerStatusToggled(_partnerId, _isActive);
     }
@@ -109,10 +106,10 @@ contract PartnerRegistry is Ownable {
         return (p.isActive, p.name, p.description, p.referralLink, p.partnerWallet);
     }
 
-    /**
-     * @dev Возвращает адрес кошелька партнера по его ID.
-     * @param _partnerId ID партнера.
-     * @return Адрес кошелька партнера.
+    /** 
+ * @dev Returns the partner's wallet address by its ID.
+ * @param _partnerId The partner's ID.
+ * @return The partner's wallet address.
      */
     function getPartnerWallet(uint256 _partnerId) external view returns (address) {
         require(_partnerId > 0 && _partnerId <= _partnerIdCounter, "Invalid partner ID");

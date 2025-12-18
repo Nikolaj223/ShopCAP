@@ -1,4 +1,4 @@
-// src/services/ipfsService.js (Без изменений, так как он уже независим)
+// src/services/ipfsService.js
 import axios from "axios";
 
 const PINATA_API_KEY = process.env.REACT_APP_PINATA_API_KEY;
@@ -6,9 +6,9 @@ const PINATA_SECRET_API_KEY = process.env.REACT_APP_PINATA_SECRET_API_KEY;
 const PINATA_BASE_URL = "https://api.pinata.cloud/pinning";
 
 /**
- * Загружает JSON-объект в IPFS через Pinata.
- * @param {object} jsonData - JSON-объект для загрузки.
- * @returns {Promise<string|null>} IPFS CID в случае успеха, иначе null.
+ * Loads a JSON object into IPFS via Pinata.
+ * @param {object} jsonData - JSON object to load.
+ * @returns {Promise<string|null>} IPFS CID if successful, otherwise null.
  */
 export const uploadJSONToPinata = async (jsonData) => {
     try {
@@ -34,9 +34,9 @@ export const uploadJSONToPinata = async (jsonData) => {
 };
 
 /**
- * Загружает файл в IPFS через Pinata.
- * @param {File} file - Файл для загрузки.
- * @returns {Promise<string|null>} IPFS CID в случае успеха, иначе null.
+ * Uploads a file to IPFS via Pinata.
+ * @param {File} file - The file to upload.
+ * @returns {Promise<string|null>} The IPFS CID if successful, otherwise null.
  */
 export const uploadFileToPinata = async (file) => {
     try {
@@ -48,7 +48,7 @@ export const uploadFileToPinata = async (file) => {
             formData,
             {
                 headers: {
-                    "Content-Type": `multipart/form-data`, // Важно! axios сам поставит правильный boundary
+                    "Content-Type": `multipart/form-data`,
                     pinata_api_key: PINATA_API_KEY,
                     pinata_secret_api_key: PINATA_SECRET_API_KEY,
                 },
@@ -65,9 +65,9 @@ export const uploadFileToPinata = async (file) => {
 };
 
 /**
- * Извлекает данные из IPFS по CID.
- * @param {string} cid - IPFS CID данных.
- * @returns {Promise<any|null>} Извлеченные данные или null в случае ошибки.
+ * Retrieves data from IPFS by CID.
+ * @param {string} cid - IPFS CID of the data.
+ * @returns {Promise<any|null>} The retrieved data or null if an error occurs.
  */
 export const fetchFromIPFS = async (cid) => {
     try {

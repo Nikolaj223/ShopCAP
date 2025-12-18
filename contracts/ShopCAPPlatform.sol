@@ -7,9 +7,9 @@ import "./CashbackManager.sol";
 
 // ============================================================================
 // 4. ShopCAPPlatform.sol
-// Назначение: Центральная точка взаимодействия.
-// Координирует вызовы между UI/другими внешними системами и внутренними контрактами.
-// Отвечает за управление доступом к основным операциям.
+// Purpose: Central point of interaction.
+// Coordinates calls between UI/other external systems and internal contracts.
+// Responsible for managing access to core operations.
 // ============================================================================
 contract ShopCAPPlatform is Ownable {
    
@@ -25,11 +25,11 @@ contract ShopCAPPlatform is Ownable {
 
 
     /**
-     * @dev Конструктор контракта платформы. Устанавливает deployer'а как владельца.
-     * Принимает адреса уже развернутых контрактов PartnerRegistry и CashbackManager.
-     * @param _partnerRegistryAddress Адрес развернутого контракта PartnerRegistry.
-     * @param _cashbackManagerAddress Адрес развернутого контракта CashbackManager.
-     */
+   * @dev Platform contract constructor. Sets the deployer as the owner.
+ * Accepts the addresses of the already deployed PartnerRegistry and CashbackManager contracts.
+ * @param _partnerRegistryAddress The address of the deployed PartnerRegistry contract.
+ * @param _cashbackManagerAddress The address of the deployed CashbackManager contract.
+ */
     constructor(address _partnerRegistryAddress, address _cashbackManagerAddress) Ownable(msg.sender) {
         require(_partnerRegistryAddress != address(0), "PartnerRegistry address cannot be zero");
         require(_cashbackManagerAddress != address(0), "CashbackManager address cannot be zero");
@@ -40,18 +40,18 @@ contract ShopCAPPlatform is Ownable {
     }
 
     // ========================================================================
-    // Функции для управления партнерами (прокси к PartnerRegistry)
-    // Эти функции могут быть вызваны только владельцем ShopCAPPlatform.
+// Functions for managing partners (proxy to PartnerRegistry)
+ // These functions can only be called by the owner of ShopCAPPlatform.
     // ========================================================================
 
     /**
-     * @dev Добавляет нового партнера. Вызывает функцию в PartnerRegistry.
-     * @param _name Название партнера.
-     * @param _description Описание партнера.
-     * @param _referralLink Реферальная ссылка партнера.
-     * @param _partnerWallet Адрес кошелька партнера.
-     * @return partnerId ID добавленного партнера.
-     */
+   * @dev Adds a new partner. Calls the function in PartnerRegistry.
+ * @param _name The name of the partner.
+ * @param _description The description of the partner.
+ * @param _referralLink The referral link of the partner.
+ * @param _partnerWallet The wallet address of the partner.
+ * @return partnerId The ID of the added partner.
+ */
     function addPartner(
         string memory _name,
         string memory _description,
@@ -63,14 +63,14 @@ contract ShopCAPPlatform is Ownable {
         return partnerId;
     }
 
-    /**
-     * @dev Обновляет информацию о существующем партнере. Вызывает функцию в PartnerRegistry.
-     * @param _partnerId ID партнера для обновления.
-     * @param _name Новое название партнера.
-     * @param _description Новое описание партнера.
-     * @param _referralLink Новая реферальная ссылка партнера.
-     * @param _partnerWallet Новый адрес кошелька партнера.
-     */
+  /**
+ * @dev Updates information about an existing partner. Calls a function in PartnerRegistry.
+ * @param _partnerId The ID of the partner to update.
+ * @param _name The new name of the partner.
+ * @param _description The new description of the partner.
+ * @param _referralLink The new referral link of the partner.
+ * @param _partnerWallet The new wallet address of the partner.
+ */
     function updatePartner(
         uint256 _partnerId,
         string memory _name,
@@ -82,25 +82,25 @@ contract ShopCAPPlatform is Ownable {
         emit PlatformPartnerUpdated(_partnerId, _name, _partnerWallet);
     }
 
-    /**
-     * @dev Изменяет статус активности партнера. Вызывает функцию в PartnerRegistry.
-     * @param _partnerId ID партнера.
-     * @param _isActive Новый статус активности (true для активации, false для деактивации).
-     */
+  /**
+ * @dev Changes the partner's activity status. Calls a function in PartnerRegistry.
+ * @param _partnerId The partner's ID.
+ * @param _isActive The new activity status (true for activation, false for deactivation).
+ */
     function togglePartnerStatus(uint256 _partnerId, bool _isActive) external onlyOwner {
         partnerRegistry.togglePartnerStatus(_partnerId, _isActive);
         emit PlatformPartnerStatusToggled(_partnerId, _isActive);
     }
 
-    /**
-     * @dev Возвращает полную информацию о партнере. Вызывает функцию в PartnerRegistry.
-     * @param _partnerId ID партнера.
-     * @return isActive Статус активности партнера.
-     * @return name Название партнера.
-     * @return description Описание партнера.
-     * @return referralLink Реферальная ссылка партнера.
-     * @return partnerWallet Адрес кошелька партнера.
-     */
+   /**
+ * @dev Returns full information about a partner. Calls a function in PartnerRegistry.
+ * @param _partnerId The ID of the partner.
+ * @return isActive The status of the partner's activity.
+ * @return name The name of the partner.
+ * @return description The description of the partner.
+ * @return referralLink The referral link of the partner.
+ * @return partnerWallet The address of the partner's wallet.
+ */
     function getPartnerDetails(uint256 _partnerId)
         external
         view
@@ -108,74 +108,65 @@ contract ShopCAPPlatform is Ownable {
     {
         return partnerRegistry.getPartnerDetails(_partnerId);
     }
-
-    /**
-     * @dev Возвращает адрес кошелька партнера по его ID. Вызывает функцию в PartnerRegistry.
-     * @param _partnerId ID партнера.
-     * @return Адрес кошелька партнера.
-     */
+/**
+ * @dev Returns the partner's wallet address by its ID. Calls the function in PartnerRegistry.
+ * @param _partnerId The partner's ID.
+ * @return The partner's wallet address.
+ */
     function getPartnerWallet(uint256 _partnerId) external view returns (address) {
         return partnerRegistry.getPartnerWallet(_partnerId);
     }
 
     // ========================================================================
-    // Функции для управления пользователями и кэшбэком (прокси к CashbackManager)
-    // Эти функции могут быть вызваны только владельцем ShopCAPPlatform.
+// Functions for managing users and cashback (proxy to CashbackManager)
+ // These functions can only be called by the owner of ShopCAPPlatform.
     // ========================================================================
 
-    /**
-     * @dev Регистрирует нового пользователя в системе кэшбэка. Вызывает функцию в CashbackManager.
-     * @param _userAddress Адрес пользователя для регистрации.
-     * @param _referrerPartnerId ID партнера-реферера (0, если нет).
-     */
+   /**
+ * @dev Registers a new user in the cashback system. Calls a function in CashbackManager.
+ * @param _userAddress The user's address for registration.
+ * @param _referrerPartnerId The ID of the referral partner (0 if none).
+ */
     function registerUserOnPlatform(address _userAddress, uint256 _referrerPartnerId) external onlyOwner {
         cashbackManager.registerUser(_userAddress, _referrerPartnerId);
         emit PlatformUserRegistered(_userAddress, _referrerPartnerId);
     }
 
-    /**
-     * @dev Обрабатывает покупку и инициирует распределение кэшбэка.
-     * Вызывает функцию в CashbackManager. Это основная функция для интеграции с внешним миром
-     * @param _user Адрес пользователя, совершившего покупку.
-     * @param _purchaseAmount Сумма покупки (в единицах, соответствующим токену ShopCAP).
-     * @param _partnerId ID партнера, через которого была совершена покупка.
-     */
+ /**
+ * @dev Processes the purchase and initiates the distribution of cashback.
+ * Calls the function in CashbackManager. This is the main function for integration with the outside world
+ * @param _user The address of the user who made the purchase.
+ * @param _purchaseAmount The amount of the purchase (in units corresponding to the ShopCAP token).
+ * @param _partnerId The ID of the partner through whom the purchase was made.
+ */
     function processPurchaseAndIssueCashback(address _user, uint256 _purchaseAmount, uint256 _partnerId) external onlyOwner {
         cashbackManager.issueCashbackAndDistribute(_user, _purchaseAmount, _partnerId);
         emit PlatformCashbackProcessed(_user, _purchaseAmount, _partnerId);
     }
 
-    /**
-     * @dev Возвращает информацию о реферере пользователя из CashbackManager.
-     * @param _user Адрес пользователя.
-     * @return ID партнера-реферера.
-     */
+   /**
+ * @dev Returns information about the user's referrer from CashbackManager.
+ * @param _user User's address.
+ * @return ID of the referrer partner.
+ */
     function getUserReferrerInfo(address _user) external view returns (uint256) {
         return cashbackManager.getReferrerInfo(_user);
     }
 
     // ========================================================================
-    // Функции для просмотра состояния и управления параметрами (прокси к CashbackManager)
-    // Эти функции могут быть вызваны только владельцем ShopCAPPlatform.
+// Functions for viewing status and managing parameters (proxy to CashbackManager)
+ // These functions can only be called by the owner of ShopCAPPlatform.
     // ========================================================================
 
-    /**
-     * @dev Объявление функции для получения баланса ShopCAP токенов на контракте CashbackManager.
-     */
+   /**
+ * @dev Function declaration for retrieving the balance of ShopCAP tokens on the CashbackManager contract.
+ */
     function getCashbackManagerShopCapBalance() external view returns (uint256) {
         return cashbackManager.getShopCapTokenBalance();
     }
-
-    /**
-     * @dev Прокси функция для обновления адреса резервного кошелька в CashbackManager.
-     */
     function setCashbackManagerReserveWallet(address _newReserveWallet) external onlyOwner {
         cashbackManager.setReserveWallet(_newReserveWallet);
     }
-
-    /**
-     * @dev Прокси функция для обновления параметров кэшбэка в CashbackManager.
-     */
     function setCashbackManagerParams(
         uint256 _newBasePercent,
         uint256 _newUserShare,
@@ -184,26 +175,22 @@ contract ShopCAPPlatform is Ownable {
     ) external onlyOwner {
         cashbackManager.setCashbackParams(_newBasePercent, _newUserShare, _newReserveShare, _newBurnShare);
     }
-
-    /**
-     * @dev Прокси функция для обновления процента реферального бонуса в CashbackManager.
-     */
     function setCashbackManagerReferrerBonusPercent(uint256 _newPercent) external onlyOwner {
         cashbackManager.setReferrerBonusPercent(_newPercent);
     }
 
-    // ========================================================================
-    // Дополнительные служебные функции
-    // ========================================================================
+  // ========================================================================
+ // Additional utility functions
+ // ========================================================================
 
-    /**
-     * @dev Позволяет владельцу платформы вывести любые ERC20 токены,
-     * не связанные с ShopCAP, если они ошибочно попали на контракт Platform.
-     * Запрещает вывод ShopCAP токенов, чтобы не нарушать логику системы.
-     * @param _tokenAddress Адрес токена для вывода.
-     * @param _amount Количество токенов.
-     * @param _to Адрес получателя.
-     */
+ /**
+ * @dev Allows the platform owner to withdraw any ERC20 tokens that are not related to ShopCAP,
+ * if they have been mistakenly transferred to the Platform contract.
+ * Disallows the withdrawal of ShopCAP tokens to avoid violating the system's logic.
+ * @param _tokenAddress The address of the token to be withdrawn.
+ * @param _amount The number of tokens to be withdrawn.
+ * @param _to The address of the recipient.
+ */
     function withdrawAnyERC20TokensFromPlatform(address _tokenAddress, uint256 _amount, address _to) external onlyOwner {
         require(_tokenAddress != address(0), "Invalid token address");
         require(_to != address(0), "Invalid recipient address");
@@ -213,11 +200,6 @@ contract ShopCAPPlatform is Ownable {
         require(success, "Token withdrawal failed");
         emit PlatformWithdrawAnyERC20Tokens(_tokenAddress, _to, _amount);
     }
-
-    /**
-     * @dev Функция для получения текущего владельца контракта CashbackManager.
-     * Может быть полезна для проверки, что ShopCAPPlatform является владельцем.
-     */
     function getCashbackManagerOwner() external view returns (address) {
         return cashbackManager.owner();
     }

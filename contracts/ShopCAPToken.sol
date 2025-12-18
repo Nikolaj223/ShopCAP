@@ -7,10 +7,9 @@ import "@openzeppelin/contracts/utils/Context.sol";
 
 // ============================================================================
 // 1. ShopCAPToken.sol
-// Назначение: Стандартный токен стандарта ERC20 для операций кэшбэка и вознаграждений.
+// Purpose: Standard ERC20 token for cashback and reward operations.
 // ============================================================================
 contract ShopCAPToken is ERC20, Ownable {
-    // Константа: Начальное предложение токенов (1 миллион токенов)
     uint256 public constant INITIAL_SUPPLY = 1_000_000 * (10**18); 
 
     constructor() ERC20("ShopCAP Token", "SCAP") Ownable(msg.sender) {

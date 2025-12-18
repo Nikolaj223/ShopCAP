@@ -1,22 +1,15 @@
 /* src/components/Auth/ConnectWalletPage.css */
-
-/* Стили для общего контейнера страницы подключения кошелька */
 .auth-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh; /* Занимает всю высоту viewport */
-    background-color: #f0f2f5; /* Легкий серый фон */
-    /* Дополнительные стили, например, фоновое изображение или градиент */
+    min-height: 100vh;
+    background-color: #f0f2f5;
 }
 
-/* Стили для фонового элемента внутри контейнера (если нужен отдельный фон для карты) */
 .auth-background {
-    /* Можно использовать для эффектов, таких как blur, overlay или паттерны */
-    /* Если не требуется, этот div можно удалить из JSX и стилизуем сам .auth-card */
 }
 
-/* Стили для карточки, где расположен контент */
 .auth-card {
     background-color: #ffffff;
     border-radius: 12px;
@@ -25,11 +18,10 @@
     text-align: center;
     max-width: 450px;
     width: 90%;
-    margin: 20px; /* Отступы по краям для маленьких экранов */
-    box-sizing: border-box; /* Учитываем padding в общей ширине */
+    margin: 20px;
+    box-sizing: border-box;
 }
 
-/* Стили для заголовка/логотипа */
 .auth-header {
     margin-bottom: 30px;
 }
@@ -42,7 +34,7 @@
 }
 
 .logo-icon {
-    background-color: #6200ee; /* Фиолетовый фон иконки */
+    background-color: #6200ee;
     color: #ffffff;
     font-size: 24px;
     font-weight: bold;
@@ -67,10 +59,9 @@
     line-height: 1.5;
 }
 
-/* Стили для сообщения об ошибке */
 .error-message {
-    color: #e53935; /* Красный цвет для ошибки */
-    background-color: #ffebee; /* Светло-красный фон */
+    color: #e53935;
+    background-color: #ffebee;
     border: 1px solid #e53935;
     border-radius: 8px;
     padding: 10px 15px;
@@ -79,10 +70,8 @@
     text-align: left;
 }
 
-/* Стили для кнопки (предполагая, что auth-button уже есть в App.css, но можно доопределить тут) */
-/* Если 'auth-button' и 'large' есть в 'App.css', то тут могут быть лишь переопределения или дополнения. */
 .auth-button {
-    background-color: #6200ee; /* Основной цвет кнопки */
+    background-color: #6200ee;
     color: #ffffff;
     border: none;
     border-radius: 8px;
@@ -91,13 +80,13 @@
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    width: 100%; /* Кнопка занимает всю ширину карточки */
+    width: 100%;
     margin-top: 30px;
     box-sizing: border-box;
 }
 
 .auth-button:hover {
-    background-color: #7b1fa2; /* Более темный цвет при наведении */
+    background-color: #7b1fa2;
     transform: translateY(-2px);
 }
 
@@ -106,12 +95,3 @@
     cursor: not-allowed;
     transform: none;
 }
-
-/* Если 'App.css' не определяет 'large', то можно добавить его сюда */
-/* Например, 'large' может влиять на размер шрифта или отступы */
-/*
-.auth-button.large {
-    font-size: 20px;
-    padding: 18px 35px;
-}
-*/
