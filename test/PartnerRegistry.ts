@@ -11,7 +11,7 @@ describe("PartnerRegistry", function () {
     let addr2: any;
     let nonOwner: any;
 
-    // Данные для создания партнера
+    // Data for creating a partner
     const partnerName = "Test Partner";
     const partnerDescription = "A partner for testing purposes";
     const referralLink = "https://testpartner.com/ref";
@@ -28,12 +28,12 @@ describe("PartnerRegistry", function () {
         await partnerRegistry.waitForDeployment();
     });
 
-    // Проверка установки владельца
+    // Checking the owner's installation
     it("Should set the right owner upon deployment", async function () {
         expect(await partnerRegistry.owner()).to.equal(owner.address);
     });
 
-    // Добавление нового партнера
+    // Adding a new partner
     it("Should allow owner to add a new partner", async function () {
         await expect(
             partnerRegistry
@@ -46,9 +46,9 @@ describe("PartnerRegistry", function () {
                 )
         )
             .to.emit(partnerRegistry, "PartnerAdded")
-            .withArgs(1, partnerName, addr1.address); // Ожидаем ID 1, т.к. это первый добавленный партнер
+            .withArgs(1, partnerName, addr1.address); // Expected ID 1, as this is the first added partner
 
-        // Проверяем детали добавленного партнера
+        // Checking the details of the added partner
         const [isActive, name, description, link, wallet] =
             await partnerRegistry.getPartnerDetails(1);
         expect(isActive).to.be.true;
@@ -58,9 +58,9 @@ describe("PartnerRegistry", function () {
         expect(wallet).to.equal(addr1.address);
     });
 
-    // Обновление информации о партнере
+    // Updating partner information
     it("Should allow owner to update a partner's information", async function () {
-        // Сначала добавляем партнера
+        // Adding a partner first
         await partnerRegistry
             .connect(owner)
             .addPartner(
@@ -73,7 +73,7 @@ describe("PartnerRegistry", function () {
         const updatedName = "Updated Partner Name";
         const updatedDescription = "New description";
         const updatedReferralLink = "https://newlink.com";
-        const newPartnerWallet = addr2.address; // Новый кошелек партнера
+        const newPartnerWallet = addr2.address;
 
         await expect(
             partnerRegistry
@@ -89,17 +89,17 @@ describe("PartnerRegistry", function () {
             .to.emit(partnerRegistry, "PartnerUpdated")
             .withArgs(1, updatedName, newPartnerWallet);
 
-        // Проверяем обновленные детали
+        // Checking the updated details
         const [isActive, name, description, link, wallet] =
             await partnerRegistry.getPartnerDetails(1);
-        expect(isActive).to.be.true; // Статус активности не меняется при обновлении
+        expect(isActive).to.be.true; // The activity status does not change during the update
         expect(name).to.equal(updatedName);
         expect(description).to.equal(updatedDescription);
         expect(link).to.equal(updatedReferralLink);
         expect(wallet).to.equal(newPartnerWallet);
     });
 
-    //Нельзя обновить партнера с недействительным ID
+    //You cannot update a partner with an invalid ID
     it("Should revert if updating non-existent partner ID", async function () {
         await expect(
             partnerRegistry
@@ -114,14 +114,14 @@ describe("PartnerRegistry", function () {
         ).to.be.revertedWith("Invalid partner ID");
     });
 
-    //Нельзя изменить статус партнера с недействительным ID
+    //You cannot change the status of a partner with an invalid ID
     it("Should revert if toggling status for non-existent partner ID", async function () {
         await expect(
             partnerRegistry.connect(owner).togglePartnerStatus(999, false)
         ).to.be.revertedWith("Invalid partner ID");
     });
 
-    // Получение деталей партнера
+    // Getting partner details
     it("Should return correct partner details for a valid ID", async function () {
         await partnerRegistry
             .connect(owner)
@@ -141,14 +141,14 @@ describe("PartnerRegistry", function () {
         expect(wallet).to.equal(addr1.address);
     });
 
-    // Нельзя получить детали для недействительного ID
+    // You cannot get details for an invalid ID
     it("Should revert if getting details for non-existent partner ID", async function () {
         await expect(partnerRegistry.getPartnerDetails(999)).to.be.revertedWith(
             "Invalid partner ID"
         );
     });
 
-    // Получение кошелька партнера
+    // Receiving a partner's wallet
     it("Should return correct partner wallet for a valid ID", async function () {
         await partnerRegistry
             .connect(owner)
@@ -164,7 +164,7 @@ describe("PartnerRegistry", function () {
         );
     });
 
-    // Нельзя получить кошелек для недействительного ID
+    // You cannot get a wallet for an invalid ID
     it("Should revert if getting wallet for non-existent partner ID", async function () {
         await expect(partnerRegistry.getPartnerWallet(999)).to.be.revertedWith(
             "Invalid partner ID"

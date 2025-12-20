@@ -21,8 +21,7 @@ const ConnectWalletPage = () => {
                             <h1>ShopCAP</h1>
                         </div>
                         <p className="auth-subtitle">
-                            Подключите ваш Web3 кошелек, чтобы получить доступ к
-                            платформе.
+                            Connect your Web3 wallet to access the platform.
                         </p>
                     </div>
 
@@ -33,7 +32,7 @@ const ConnectWalletPage = () => {
                         className="auth-button large"
                         disabled={loading}
                     >
-                        {loading ? "Подключение..." : "Подключить кошелек"}
+                        {loading ? "Connecting..." : "Connect your wallet"}
                     </button>
                 </div>
             </div>
