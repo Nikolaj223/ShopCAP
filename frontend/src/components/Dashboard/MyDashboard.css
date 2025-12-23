@@ -169,3 +169,29 @@ button:disabled {
     align-items: center;
     width: 100%;
 }
+
+.eco-bar {
+    display: flex;
+    height: 24px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 15px 0;
+    background: #eee;
+}
+.eco-seg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: white;
+    font-weight: bold;
+}
+.eco-user {
+    background: #4caf50;
+}
+.eco-reserve {
+    background: #2196f3;
+}
+.eco-burn {
+    background: #f44336;
+}

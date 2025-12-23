@@ -1,236 +1,70 @@
-// src/services/contractServices.js
 import { ethers } from "ethers";
 import {
     contractAddresses,
     contractABIs,
 } from "../components/Utils/contract-config";
 
-const PARTNER_REGISTRY_ADDRESS = "0x5E148A6a1B7A6DCE6a4c8bFF4044A3d99E23b899";
 async function getChainIdFromProviderOrSigner(providerOrSigner) {
-    if (!providerOrSigner) {
-        console.error("Provider or Signer is not provided to obtain chainId.");
-        return null;
-    }
-
+    if (!providerOrSigner) return null;
     try {
         let network;
-        if (typeof providerOrSigner.provider !== "undefined") {
+        if (providerOrSigner.provider) {
             network = await providerOrSigner.provider.getNetwork();
-        } else if (typeof providerOrSigner.getNetwork === "function") {
-            network = await providerOrSigner.getNetwork();
         } else {
-            console.error(
-                "Unable to determine the providerOrSigner type to obtain the chainId."
-            );
-            return null;
+            network = await providerOrSigner.getNetwork();
         }
         return network.chainId;
     } catch (error) {
-        console.error("Error retrieving chainId from providerOrSigner:", error);
+        console.error("Error retrieving chainId:", error);
         return null;
     }
 }
-const partnerRegistryAbi = [
-    "function addPartner(string memory _name, string memory _description, string memory _referralLink, address _partnerWallet) external returns (uint256)",
-];
-const formatChainIdToHex = (chainId) => {
-    if (typeof chainId === "bigint") {
-        return `0x${chainId.toString(16)}`;
-    }
-    if (typeof chainId === "number") {
-        return `0x${chainId.toString(16)}`;
-    }
-    return String(chainId).toLowerCase();
-};
 
 const getContractAddressesForChain = (chainId) => {
-    if (!chainId) {
-        console.error("Chain ID is not provided to obtain contract addresses.");
-        return null;
-    }
-    // const hexChainId = formatChainIdToHex(chainId);
-    // const addresses = contractAddresses[hexChainId];
+    if (!chainId) return null;
     const addresses = contractAddresses[chainId];
-
     if (!addresses) {
-        console.warn(
-            `Contracts are not deployed on the network with ID ${chainId}. Check contract-config.js`
-        );
+        console.warn(`Contracts not found for chain ${chainId}`);
         return null;
     }
     return addresses;
 };
 
-/**
- * Gets an instance of the ShopCAPToken contract.
- * @param {ethers.Provider | ethers.Signer} providerOrSigner - An ethers. Provider or Signer object.
- * @returns {Promise<ethers.Contract | null>} An instance of the ShopCAPToken contract or null.
- */
 export const getShopCAPTokenContract = async (providerOrSigner) => {
     const chainId = await getChainIdFromProviderOrSigner(providerOrSigner);
-    if (!chainId) return null;
-
     const addresses = getContractAddressesForChain(chainId);
-    if (!addresses || !addresses.shopCAPToken) {
-        console.error(
-            `ShopCAPToken address not found for network with chainId ${chainId}.`
-        );
-        return null;
-    }
-    try {
-        return new ethers.Contract(
-            addresses.shopCAPToken,
-            contractABIs.ShopCAPToken,
-            providerOrSigner
-        );
-    } catch (error) {
-        console.error("Error creating the ShopCAPToken contract:", error);
-        return null;
-    }
+    if (!addresses?.shopCAPToken) return null;
+    return new ethers.Contract(
+        addresses.shopCAPToken,
+        contractABIs.ShopCAPToken,
+        providerOrSigner
+    );
 };
 
-/**
- * Gets an instance of the PartnerRegistry contract.
- * @param {ethers.Provider | ethers.Signer} providerOrSigner - Provider or Signer object ethers.
- * @returns {Promise<ethers.Contract | null>} An instance of the PartnerRegistry contract or null.
- */
 export const getPartnerRegistryContract = async (providerOrSigner) => {
     const chainId = await getChainIdFromProviderOrSigner(providerOrSigner);
-    if (!chainId) return null;
-
     const addresses = getContractAddressesForChain(chainId);
-    if (!addresses || !addresses.partnerRegistry) {
-        console.error(
-            `The PartnerRegistry address was not found for the network with chainId ${chainId}.`
-        );
-        return null;
-    }
-    try {
-        return new ethers.Contract(
-            addresses.partnerRegistry,
-            contractABIs.PartnerRegistry,
-            providerOrSigner
-        );
-    } catch (error) {
-        console.error("Error in creating the PartnerRegistry contract:", error);
-        return null;
-    }
+    if (!addresses?.partnerRegistry) return null;
+    return new ethers.Contract(
+        addresses.partnerRegistry,
+        contractABIs.PartnerRegistry,
+        providerOrSigner
+    );
 };
 
-/**
- * Gets an instance of the CashbackManager contract.
- * @param {ethers.Provider | ethers.Signer} providerOrSigner - An ethers. Provider or Signer object.
- * @returns {Promise<ethers.Contract | null>} An instance of the CashbackManager contract or null.
- */
-export const getCashbackManagerContract = async (providerOrSigner) => {
+export const getPlatformContract = async (providerOrSigner) => {
     const chainId = await getChainIdFromProviderOrSigner(providerOrSigner);
-    if (!chainId) return null;
-
     const addresses = getContractAddressesForChain(chainId);
-    if (!addresses || !addresses.cashbackManager) {
-        console.error(
-            `CashbackManager address not found for network with chainId ${chainId}.`
-        );
-        return null;
-    }
-    try {
-        return new ethers.Contract(
-            addresses.cashbackManager,
-            contractABIs.CashbackManager,
-            providerOrSigner
-        );
-    } catch (error) {
-        console.error("CashbackManager Contract creation error:", error);
-        return null;
-    }
+    if (!addresses?.shopCAPPlatform) return null;
+    return new ethers.Contract(
+        addresses.shopCAPPlatform,
+        contractABIs.ShopCAPPlatform,
+        providerOrSigner
+    );
 };
 
-/**
- * Gets an instance of the ShopCAPPlatform contract.
- * @param {ethers.Provider | ethers.Signer} providerOrSigner - An ethers. Provider or Signer object.
- * @returns {Promise<ethers.Contract | null>} An instance of the ShopCAPPlatform contract or null.
- */
-export const getShopCAPPlatformContract = async (providerOrSigner) => {
-    const chainId = await getChainIdFromProviderOrSigner(providerOrSigner);
-    if (!chainId) return null;
+// --- Interaction functions ---
 
-    const addresses = getContractAddressesForChain(chainId);
-    if (!addresses || !addresses.shopCAPPlatform) {
-        console.error(
-            `The ShopCAPPlatform address was not found for the network with chainId ${chainId}.`
-        );
-        return null;
-    }
-    try {
-        return new ethers.Contract(
-            addresses.shopCAPPlatform,
-            contractABIs.ShopCAPPlatform,
-            providerOrSigner
-        );
-    } catch (error) {
-        console.error("ShopCAPPlatform contract creation error:", error);
-        return null;
-    }
-};
-
-/**
- * Gets the token balance for a given address.
- * @param {ethers.Contract} tokenContract - Token contract instance (ShopCAPToken).
- * @param {string} userAddress - User address.
- * @returns {Promise<string>} Token balance in an easy-to-read format.
- */
-export const getTokenBalance = async (tokenContract, userAddress) => {
-    if (!tokenContract) {
-        console.error(
-            "getTokenBalance: The token contract has not been provided."
-        );
-        return "0";
-    }
-    if (!userAddress) {
-        console.error("getTokenBalance: The user's address is not provided.");
-        return "0";
-    }
-    try {
-        const balanceBigNumber = await tokenContract.balanceOf(userAddress);
-        const decimals = await tokenContract.decimals();
-        return ethers.formatUnits(balanceBigNumber, decimals);
-    } catch (error) {
-        console.error(
-            `Error when getting the balance for ${userAddress}:`,
-            error
-        );
-        return "0";
-    }
-};
-export const transferTokens = async (tokenContract, toAddress, amount) => {
-    if (!tokenContract) {
-        throw new Error(
-            "transferTokens: The ShopCAPToken contract is unavailable."
-        );
-    }
-    if (!tokenContract.runner || !tokenContract.runner.provider) {
-        throw new Error(
-            "transferTokens:The ShopCAPToken contract must be initialized with a Signer to execute a transaction."
-        );
-    }
-
-    try {
-        const decimals = await tokenContract.decimals();
-        const amountWei = ethers.parseUnits(amount, decimals);
-        const tx = await tokenContract.transfer(toAddress, amountWei);
-        await tx.wait();
-        console.log(
-            `Tokens have been successfully transferred. Transaction hash: ${tx.hash}`
-        );
-        return tx;
-    } catch (error) {
-        console.error(
-            `Error when translating tokens ${amount} to ${toAddress}:`,
-            error
-        );
-        throw error;
-    }
-};
 export const addPartner = async (
     signer,
     partnerName,
@@ -238,146 +72,130 @@ export const addPartner = async (
     referralLink,
     ownerAddress
 ) => {
-    if (!signer) {
-        throw new Error("addPartner: Signer not provided.");
-    }
+    const registry = await getPartnerRegistryContract(signer);
+    if (!registry) throw new Error("Registry contract not found");
 
-    try {
-        const registryContract = new ethers.Contract(
-            PARTNER_REGISTRY_ADDRESS,
-            partnerRegistryAbi,
-            signer
-        );
-
-        console.log("Calling PartnerRegistry.addPartner directly...");
-
-        const tx = await registryContract.addPartner(
-            partnerName,
-            description,
-            referralLink,
-            ownerAddress
-        );
-
-        console.log("The transaction has been sent to the registry...");
-        await tx.wait();
-
-        console.log(
-            `The partner "${partnerName}" is registered directly in the registry.`
-        );
-        return tx;
-    } catch (error) {
-        console.error(
-            `Error in direct-addPartner for "${partnerName}":`,
-            error
-        );
-        throw error;
-    }
-};
-
-export const getPartnerDetails = async (platformContract, partnerId) => {
-    if (!platformContract) {
-        throw new Error(
-            "getPartnerDetails: The ShopCAPPlatform contract is not available."
-        );
-    }
-    try {
-        const partner = await platformContract.getPartner(partnerId);
-        return {
-            id: partner.id.toString(),
-            name: partner.name,
-            description: partner.description,
-            referralLink: partner.referralLink,
-            owner: partner.owner,
-            isActive: partner.isActive,
-        };
-    } catch (error) {
-        console.error(
-            `Error while retrieving partner details with ID ${partnerId}:`,
-            error
-        );
-        throw error;
-    }
-};
-export const getTotalPartners = async (platformContract) => {
-    if (!platformContract) {
-        throw new Error(
-            "getTotalPartners: The ShopCAPPlatform contract is unavailable."
-        );
-    }
-    try {
-        const count = await platformContract.totalPartners();
-        return Number(count);
-    } catch (error) {
-        console.error(
-            "Error when getting the total number of partners:",
-            error
-        );
-        throw error;
-    }
+    const tx = await registry.addPartner(
+        partnerName,
+        description,
+        referralLink,
+        ownerAddress
+    );
+    await tx.wait();
+    return tx;
 };
 
 export const mintTokens = async (signer, recipientAddress, amount) => {
-    if (!signer) {
-        throw new Error(
-            "mintTokens: Signer is not provided. Wallet connection is required."
-        );
-    }
+    const tokenContract = await getShopCAPTokenContract(signer);
+    if (!tokenContract) throw new Error("Token contract not found");
 
-    try {
-        const tokenContract = await getShopCAPTokenContract(signer);
-
-        if (!tokenContract) {
-            throw new Error("Couldn't get a ShopCAPToken instance.");
-        }
-        const tokenDecimals = await tokenContract.decimals();
-        const amountToMint = ethers.parseUnits(
-            amount.toString(),
-            tokenDecimals
-        );
-        const tx = await tokenContract.mint(recipientAddress, amountToMint);
-        console.log("The transaction has been sent, awaiting confirmation...");
-        const receipt = await tx.wait();
-
-        console.log(
-            `Successfully mined ${amount} SCAP for ${recipientAddress}. Hash: ${tx.hash}`
-        );
-
-        return receipt;
-    } catch (error) {
-        console.error(
-            `Error when minting tokens for ${recipientAddress}:`,
-            error
-        );
-        throw error;
-    }
+    const decimals = await tokenContract.decimals();
+    const tx = await tokenContract.mint(
+        recipientAddress,
+        ethers.parseUnits(amount.toString(), decimals)
+    );
+    return await tx.wait();
 };
 
 export const getShopCAPBalance = async (provider, accountAddress) => {
-    if (!provider) {
-        throw new Error("getShopCAPBalance: The provider is not provided.");
-    }
-    if (!accountAddress) {
-        throw new Error(
-            "getShopCAPBalance: The account address is not provided."
-        );
+    const tokenContract = await getShopCAPTokenContract(provider);
+    if (!tokenContract) return "0";
+    const balance = await tokenContract.balanceOf(accountAddress);
+    const decimals = await tokenContract.decimals();
+    return ethers.formatUnits(balance, decimals);
+};
+
+export const getAllPartners = async (registryContract) => {
+    if (!registryContract) {
+        console.error("Registry contract instance is missing");
+        return [];
     }
 
-    try {
-        const tokenContract = await getShopCAPTokenContract(provider);
+    const partners = [];
+    let id = 1;
+    let keepGoing = true;
 
-        if (!tokenContract) {
-            throw new Error("Failed to retrieve a ShopCAPToken instance.");
+    const MAX_PARTNERS_LIMIT = 500;
+
+    while (keepGoing && id <= MAX_PARTNERS_LIMIT) {
+        try {
+            // Trying to get partner data by ID through a public mapping
+            // In ethers v6, mapping is called as a function
+            const p = await registryContract.partners(id);
+
+            // If the id in the structure is 0, then we have reached an empty space in the mapping
+            if (!p || p.id.toString() === "0") {
+                keepGoing = false;
+            } else {
+                partners.push({
+                    id: p.id.toString(),
+                    isActive: p.isActive,
+                    name: p.name,
+                    description: p.description,
+                    referralLink: p.referralLink,
+                    partnerWallet: p.partnerWallet,
+                });
+                id++;
+            }
+        } catch (error) {
+            // If the contract throws an error (for example, require in getPartnerDetails),
+            // then there are no more partners
+            keepGoing = false;
         }
-
-        const balanceBigInt = await tokenContract.balanceOf(accountAddress);
-        const tokenDecimals = await tokenContract.decimals();
-
-        return ethers.formatUnits(balanceBigInt, tokenDecimals);
-    } catch (error) {
-        console.error(
-            `Error when requesting a SCAP balance for ${accountAddress}:`,
-            error
-        );
-        throw error;
     }
+
+    return partners;
+};
+
+/**
+ * NEW: Getting a referrer ID for a user (Personal account)
+ */
+export const getUserReferrerId = async (provider, userAddress) => {
+    const platform = await getPlatformContract(provider);
+    if (!platform) return "0";
+    try {
+        // getUserReferrerInfo(address _user)
+        const refId = await platform.getUserReferrerInfo(userAddress);
+        return refId.toString();
+    } catch (e) {
+        return "0";
+    }
+};
+
+/**
+ * 70/20/10 distribution math (for Dashboard)
+ */
+export const calculateVisualDistribution = (amount) => {
+    const val = parseFloat(amount || 0);
+    return {
+        user: (val * 0.7).toFixed(2),
+        reserve: (val * 0.2).toFixed(2),
+        burn: (val * 0.1).toFixed(2),
+    };
+};
+export const getCashbackManagerContract = async (providerOrSigner) => {
+    // CashbackManager
+    const address = "0x603Ab4020eF47a48966736dcBBCef15212602085";
+
+    // ABI должен включать все функции и переменные, к которым вы обращаетесь в MyDashboard.js
+    const abi = [
+        // public
+        "function cashbackBasePercent() view returns (uint256)",
+        "function userCashbackShare() view returns (uint256)",
+        "function reserveShare() view returns (uint256)",
+        "function burnShare() view returns (uint256)",
+        "function referrerBonusPercent() view returns (uint256)",
+        "function userReferrerPartnerId(address) view returns (uint256)",
+
+        // Management functions
+        "function registerUser(address user, uint256 referrerId) external",
+        "function setCashbackParams(uint256, uint256, uint256, uint256) external",
+        "function setReferrerBonusPercent(uint256) external",
+
+        // View
+        "function getReferrerInfo(address user) view returns (uint256)",
+        "function getShopCapTokenBalance() view returns (uint256)",
+    ];
+
+    return new ethers.Contract(address, abi, providerOrSigner);
 };
